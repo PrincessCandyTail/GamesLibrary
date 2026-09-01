@@ -8,17 +8,17 @@
  * GET /api/games-Aufruf abgeschlossen ist (Spiele geladen).
  */
 Cypress.Commands.add('visitApp', () => {
-  cy.intercept('GET', '/api/games').as('getGames');
-  cy.visit('/');
-  cy.wait('@getGames');
+    cy.intercept('GET', '/api/games').as('getGames');
+    cy.visit('/');
+    cy.wait('@getGames');
 });
 
 /**
  * Öffnet das "Add Game"-Formular über den Header-Button.
  */
 Cypress.Commands.add('openAddGameForm', () => {
-  cy.get('.home-page__add-btn').click();
-  cy.get('.game-form').should('be.visible');
+    cy.get('.home-page__add-btn').click();
+    cy.get('.game-form').should('be.visible');
 });
 
 /**
@@ -26,27 +26,27 @@ Cypress.Commands.add('openAddGameForm', () => {
  * Felder, die nicht übergeben werden, bleiben unverändert.
  */
 Cypress.Commands.add('fillGameForm', (game: {
-  title?: string;
-  description?: string;
-  imageUrl?: string;
-  releaseDate?: string;
+    title?: string;
+    description?: string;
+    imageUrl?: string;
+    releaseDate?: string;
 }) => {
-  if (game.title !== undefined) {
-    cy.get('.game-form input[name="title"]').clear();
-    if (game.title) cy.get('.game-form input[name="title"]').type(game.title);
-  }
-  if (game.description !== undefined) {
-    cy.get('.game-form textarea[name="description"]').clear();
-    if (game.description) cy.get('.game-form textarea[name="description"]').type(game.description);
-  }
-  if (game.imageUrl !== undefined) {
-    cy.get('.game-form input[name="imageUrl"]').clear();
-    if (game.imageUrl) cy.get('.game-form input[name="imageUrl"]').type(game.imageUrl);
-  }
-  if (game.releaseDate !== undefined) {
-    cy.get('.game-form input[name="releaseDate"]').clear();
-    if (game.releaseDate) cy.get('.game-form input[name="releaseDate"]').type(game.releaseDate);
-  }
+    if (game.title !== undefined) {
+        cy.get('.game-form input[name="title"]').clear();
+        if (game.title) cy.get('.game-form input[name="title"]').type(game.title);
+    }
+    if (game.description !== undefined) {
+        cy.get('.game-form textarea[name="description"]').clear();
+        if (game.description) cy.get('.game-form textarea[name="description"]').type(game.description);
+    }
+    if (game.imageUrl !== undefined) {
+        cy.get('.game-form input[name="imageUrl"]').clear();
+        if (game.imageUrl) cy.get('.game-form input[name="imageUrl"]').type(game.imageUrl);
+    }
+    if (game.releaseDate !== undefined) {
+        cy.get('.game-form input[name="releaseDate"]').clear();
+        if (game.releaseDate) cy.get('.game-form input[name="releaseDate"]').type(game.releaseDate);
+    }
 });
 
 /**
@@ -55,31 +55,42 @@ Cypress.Commands.add('fillGameForm', (game: {
  * Datenbank zwischen Testläufen sauber bleibt.
  */
 Cypress.Commands.add('deleteGameByTitle', (title: string) => {
-  cy.request('GET', '/api/games').then((res) => {
-    const match = (res.body as Array<{ id: number; title: string }>).find(
-      (g) => g.title === title
-    );
-    if (match) {
-      cy.request('DELETE', `/api/games/${match.id}`);
-    }
-  });
+    cy.request('GET', '/api/games').then((res) => {
+        const match = (res.body as Array<{ id: number; title: string }>).find(
+            (g) => g.title === title
+        );
+        if (match) {
+            cy.request('DELETE', `/api/games/${match.id}`);
+        }
+    });
 });
+Cypress.Commands.add('searchForNoResults', () => {
+    const searchTerm = `CypressNoResult_${Date.now()}_XYZ123`;
 
+    cy.intercept('GET', '/api/games/search*').as('searchNoResults');
+
+    cy.get('.search-bar__input').clear().type(searchTerm);
+    cy.get('.search-bar__button').click();
+
+    cy.wait('@searchNoResults').its('response.statusCode').should('eq', 200);
+    cy.get('.game-list__status-title').should('contain.text', 'No Games Found');
+});
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace Cypress {
-    interface Chainable {
-      visitApp(): Chainable<void>;
-      openAddGameForm(): Chainable<void>;
-      fillGameForm(game: {
-        title?: string;
-        description?: string;
-        imageUrl?: string;
-        releaseDate?: string;
-      }): Chainable<void>;
-      deleteGameByTitle(title: string): Chainable<void>;
+    // eslint-disable-next-line @typescript-eslint/no-namespace
+    namespace Cypress {
+        interface Chainable {
+            visitApp(): Chainable<void>;
+            openAddGameForm(): Chainable<void>;
+            fillGameForm(game: {
+                title?: string;
+                description?: string;
+                imageUrl?: string;
+                releaseDate?: string;
+            }): Chainable<void>;
+            deleteGameByTitle(title: string): Chainable<void>;
+            searchForNoResults(): Chainable<void>;
+        }
     }
-  }
 }
 
 export {};
