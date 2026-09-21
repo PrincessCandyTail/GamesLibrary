@@ -27,7 +27,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Build application
         run: npm run build
@@ -37,7 +37,6 @@ jobs:
         with:
           name: frontend-build
           path: frontend/dist
-
 
   tests:
     name: Jest Tests - Shard ${{ matrix.shard }}/2
@@ -63,7 +62,7 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Run Jest tests
         run: npm test -- --shard=${{ matrix.shard }}/2 --maxWorkers=50%
