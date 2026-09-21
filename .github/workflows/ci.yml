@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: Build
+    name: Build React App
     runs-on: ubuntu-22.04
 
     defaults:
@@ -35,11 +35,9 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: build-files
-          path: |
-            frontend/.next
-            frontend/package.json
-            frontend/package-lock.json
+          name: frontend-build
+          path: frontend/dist
+
 
   tests:
     name: Jest Tests - Shard ${{ matrix.shard }}/2
