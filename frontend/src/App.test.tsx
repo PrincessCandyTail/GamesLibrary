@@ -5,6 +5,9 @@ import App from './App';
 test('renders GamesLibrary application', () => {
   render(<App />);
 
-  const heading = screen.getByText(/games/i);
+  const heading = screen.getByRole('heading', {
+    name: /games library/i
+  });
+
   expect(heading).toBeInTheDocument();
 });
