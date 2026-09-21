@@ -1,15 +1,18 @@
 name: Pipeline with Jest Test
 on:
   push:
-  branches:
-    - main
+    branches:
+      - main
 jobs:
   build:
-  runs-on: ubuntu-22.04
-  steps:
+    runs-on: ubuntu-22.04
+
+    steps:
     - name: Checkout repository
-  uses: actions/checkout@v3
+      uses: actions/checkout@v3
+
     - name: Install dependencies
-  run: npm install
+      run: npm install
+
     - name: Run tests
-  run: npm test
+      run: npm test
